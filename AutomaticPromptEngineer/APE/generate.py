@@ -25,7 +25,8 @@ def generate_prompt(instructions, config):
     # Instantiate the LLM
     model = llm.model_from_config(config['model'], disable_tqdm=False)
     prompts = model.complete(
-        queries, n=config['num_prompts_per_subsample'])
+        queries, n=config['num_queries_per_subsample'])
+    
     return prompts
 
 
@@ -36,7 +37,7 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
             [PROMPT] [GOAL] [DEPRESSED] [ANXIOUS] [INPUT]
             prompt (list) : All generated instructions
             df (dataframe)
-        config (dictionary)
+            config (dictionary) : config['evaluation']
     """
     # Random sample prompt from generated prompt list 
     indices = random.sample(len(prompt), config['num_subsamples'])
@@ -54,7 +55,7 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
     for inst in instructions:
         temp = config.Config.EVAL_TEMPLATE 
         for i in range(config['num_inputs']):
-            filled_prompt = template.EvalTemplate(temp).fill(inst, goals[i], depressed[i], anxious[i], input[i])
+            filled_prompt = template.EvalTemplate(temp).fill(inst, goal[i], depressed[i], anxious[i], input[i])
             queries.append(filled_prompt)
 
     # Instantiate the LLM
@@ -83,7 +84,8 @@ def score_prompt(df, config):
     queries = []
     for i in df:
         temp = config.Config.SCORE_TEMPLATE 
-        filled_prompt = template.ScoreTemplate(temp).fill(df[i])
+        input = tuple(df.iloc[i])[1:]
+        filled_prompt = template.ScoreTemplate(temp).fill(input)
         queries.append(filled_prompt) 
     
     # Instantiate the LLM
