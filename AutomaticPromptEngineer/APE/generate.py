@@ -1,4 +1,3 @@
-from faulthandler import disable
 from APE import data, llm
 from configs import config, template
 import random
@@ -22,7 +21,7 @@ def generate_prompt(instructions, config):
         temp = config.Config.GENERATION_TEMPLATE 
         filled_prompt = template.GenerationTemplate(temp).fill(demo)
         queries.append(filled_prompt)
-
+        
     # Instantiate the LLM
     model = llm.model_from_config(config['model'], disable_tqdm=False)
     prompts = model.complete(
@@ -34,7 +33,6 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
     """Generates evaluation prompt
 
     Args:
-        prompt_eval_template (string): prompt template not filled 
             [PROMPT] [GOAL] [DEPRESSED] [ANXIOUS] [INPUT]
             prompt (list) : All generated instructions
             df (dataframe)
