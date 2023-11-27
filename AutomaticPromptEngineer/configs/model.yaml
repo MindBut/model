@@ -17,16 +17,15 @@ evaluation:
   num_inputs: 1
   num_outputs_per_subsample: 3
   method: likelihood
-  config:
-    model:
-      name: GPT
-      gpt_config:
-        model: gpt-3.5-turbo-1106
-        temperature: 0.7
-        max_tokens: 500
-        top_p: 1.0
-        frequency_penalty: 0.0
-        presence_penalty: 0.0
+  model:
+    name: GPT
+    gpt_config:
+      model: gpt-3.5-turbo-1106
+      temperature: 0.7
+      max_tokens: 500
+      top_p: 1.0
+      frequency_penalty: 0.0
+      presence_penalty: 0.0
 score:
   num_scores: 1
   model: 
