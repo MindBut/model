@@ -1,9 +1,9 @@
 from APE import data, llm
-from configs import config, template
+from configs import unfilled, template
 import random
 import numpy as np 
 import pandas as pd
-
+import time
 
 def generate_prompt(instructions, config):
     """Generates prompt using prompt generator
@@ -18,7 +18,8 @@ def generate_prompt(instructions, config):
     queries = []
     demos = data.subsample_instruction(instructions, config['num_subsamples'])
     for demo in demos: 
-        temp = config.Config.GENERATION_TEMPLATE 
+        t = unfilled.Config()
+        temp = t.GENERATION_TEMPLATE 
         filled_prompt = template.GenerationTemplate(temp).fill(demo)
         queries.append(filled_prompt)
         
@@ -28,7 +29,6 @@ def generate_prompt(instructions, config):
         queries, n=config['num_queries_per_subsample'])
     
     return prompts
-
 
 def eval_prompt(prompt, goals, depressed, anxious, df, config):
     """Generates evaluation prompt

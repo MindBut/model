@@ -1,7 +1,7 @@
 generation:
-  num_subsamples: 30
   num_demos: 1 
-  num_prompts_per_subsample: 5
+  num_queries_per_subsample: 5
+  num_subsamples: 30
   model: 
     name: GPT
     gpt_config: 
@@ -9,14 +9,11 @@ generation:
       temperature: 0.9
       max_tokens: 500
       top_p: 0.9
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
 
 evaluation:
-  num_subsamples: 20
   num_inputs: 1
-  num_outputs_per_subsample: 3
-  method: likelihood
+  num_queries_per_subsample: 3
+  num_subsamples: 20
   model:
     name: GPT
     gpt_config:
@@ -24,10 +21,9 @@ evaluation:
       temperature: 0.7
       max_tokens: 500
       top_p: 1.0
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
+
 score:
-  num_scores: 1
+  num_queries_per_subsample: 1
   model: 
     name: GPT
     gpt_config:
@@ -35,6 +31,4 @@ score:
       temperature: 0.7
       max_tokens: 200
       top_p: 1.0
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
 

@@ -1,6 +1,6 @@
 """Contains classes for querying large language models"""
 from tqdm import tqdm
-
+import os
 import openai
 
 gpt_costs_per_thousand = {
@@ -80,11 +80,11 @@ class GPT():
         while response is None:
             try:
                 response = openai.chat.completions.create(
-                    **config, message=messages)
+                    **config, messages=messages)
             except Exception as e:
                 print(e)
                 print('Retrying...')
-                time.sleep(5)
+                time.sleep(10)
         
         return [response['choices'][i]['message']['content'] for i in range(len(response['choices']))]
     
