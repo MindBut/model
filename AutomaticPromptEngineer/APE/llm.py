@@ -1,8 +1,4 @@
 """Contains classes for querying large language models"""
-
-from math import ceil 
-import os
-import time 
 from tqdm import tqdm
 
 import openai
@@ -63,68 +59,35 @@ class GPT():
         
         res = []
         for p in tqdm(prompt, disable=self.disable_tqdm):
-            res += self.__complete(p, n)
+            temp = self.__complete(p, n)
+            for i in temp:
+                res.append(i)
+             
         return res
-
-    def log_probs(self, text):
-        """Returns the log probs of the text"""
-        if not isinstance(text, list):
-            text = [text]
-        if self.needs_confirmation:
-            self.confirm_cost(text, 1, 0)
-        if not self.disable_tqdm:
-            print(f"[{self.config['name']}] Getting log probs for {len(text)} strings")
-        log_probs = []
-        tokens = []
-        for text in tqdm(text, disable=self.disable_tqdm):
-            log_probs, tokens = self.__log_probs(text)
-        return log_probs, tokens
 
     def __complete(self, prompt, n):
         """Generates text from the model."""
-        if not isinstance(prompt, list):
-            text = [prompt]
+        
+        if not isinstance(prompt, str):
+            ValueError(f'Input prompt is not string type')
+            
         config = self.config['gpt_config'].copy()
         config['n'] = n
         response = None
+
+        messages = [{"role": "user", "content": prompt}]
+        
         while response is None:
             try:
                 response = openai.chat.completions.create(
-                    **config, prompt=prompt)
+                    **config, message=messages)
             except Exception as e:
                 print(e)
                 print('Retrying...')
                 time.sleep(5)
         
-        return [response['choices'][i]['text'] for i in range(len(response['choices']))]
+        return [response['choices'][i]['message']['content'] for i in range(len(response['choices']))]
     
-    def __log_probs(self, text):
-        """Returns the log probs of the text."""
-        if not isinstance(text, list):
-            text = [text]
-        config = self.config['gpt_config'].copy()
-        config['logprobs'] = 1
-        config['echo'] = True
-        config['max_tokens'] = 0
-        if isinstance(text, list):
-            text = [f'\n{text[i]}' for i in range(len(text))]
-        else:
-            text = f'\n{text}'
-        response = None
-        while response is None:
-            try:
-                response = openai.Completion.create(
-                    **config, prompt=text)
-            except Exception as e:
-                print(e)
-                print('Retrying...')
-                time.sleep(5)
-        log_probs = [response['choices'][i]['logprobs']['token_logprobs'][1:]
-                     for i in range(len(response['choices']))]
-        tokens = [response['choices'][i]['logprobs']['tokens'][1:]
-                  for i in range(len(response['choices']))]
-
-        return log_probs, tokens
 
 def gpt_get_estimated_cost(config, prompt, max_tokens):
     """Uses the current API costs/1000 tokens to estimate the cost of the generating text from the model."""
