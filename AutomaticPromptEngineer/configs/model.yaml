@@ -1,7 +1,7 @@
 generation:
   num_demos: 1 
-  num_queries_per_subsample: 5
-  num_subsamples: 30
+  num_queries_per_subsample: 3
+  num_subsamples: 1
   model: 
     name: GPT
     gpt_config: 
