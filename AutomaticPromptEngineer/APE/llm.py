@@ -2,6 +2,7 @@
 from tqdm import tqdm
 import os
 import openai
+import time
 
 gpt_costs_per_thousand = {
     'gpt-3.5-turbo-1106': 0.0100,
@@ -85,8 +86,9 @@ class GPT():
                 print(e)
                 print('Retrying...')
                 time.sleep(10)
-        
-        return [response['choices'][i]['message']['content'] for i in range(len(response['choices']))]
+        # print([response['choices'] for i in range(len(response['choices']))])
+        # return [response['choices'][i]['message']['content'] for i in range(len(response['choices']))]
+        return response
     
 
 def gpt_get_estimated_cost(config, prompt, max_tokens):
