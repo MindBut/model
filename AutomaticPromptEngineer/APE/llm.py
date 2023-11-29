@@ -13,7 +13,7 @@ gpt_costs_per_thousand = {
 
 def model_from_config(config, disable_tqdm=True):
     """Returns a model based on the config"""
-    model_type = config["name"]
+    model_type = config['model']["name"]
     if model_type == 'GPT':
         return GPT(config, disable_tqdm=disable_tqdm)
     else: 
@@ -53,10 +53,10 @@ class GPT():
             
         if self.needs_confirmation:
             self.confirm_cost(
-                prompt, n, self.config['gpt_config']['max_tokens'])
+                prompt, n, self.config['model']['gpt_config']['max_tokens'])
         
         if not self.disable_tqdm:
-            print(f"[{self.config['name']}] Generating {len(prompt) * n} completions, ")
+            print(f"[{self.config['model']['name']}] Generating {len(prompt) * n} completions, ")
         
         res = []
         for p in tqdm(prompt, disable=self.disable_tqdm):
@@ -72,22 +72,32 @@ class GPT():
         if not isinstance(prompt, str):
             ValueError(f'Input prompt is not string type')
             
-        config = self.config['gpt_config'].copy()
+        config = self.config['model']['gpt_config'].copy()
         config['n'] = n
         response = None
 
         messages = [{"role": "user", "content": prompt}]
-        
         while response is None:
             try:
                 response = openai.chat.completions.create(
-                    **config, messages=messages)
+                    **self.config['model']['gpt_config'], messages=messages)
             except Exception as e:
                 print(e)
                 print('Retrying...')
                 time.sleep(10)
         # print([response['choices'] for i in range(len(response['choices']))])
         # return [response['choices'][i]['message']['content'] for i in range(len(response['choices']))]
+        response_ = []
+        response = []
+
+        for i in range(self.config['num_queries_per_subsample']):
+            msg = response
+            response_.append(msg)
+
+        for i in response_:
+            msg = response_[1][1][i].message.content
+            response.append(msg)
+        
         return response
     
 

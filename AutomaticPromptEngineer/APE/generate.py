@@ -24,7 +24,7 @@ def generate_prompt(instructions, config):
         queries.append(filled_prompt)
         
     # Instantiate the LLM
-    model = llm.model_from_config(config['model'], disable_tqdm=False)
+    model = llm.model_from_config(config, disable_tqdm=False)
     prompts = model.complete(
         queries, n=config['num_queries_per_subsample'])
     
@@ -40,8 +40,7 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
             config (dictionary) : config['evaluation']
     """
     # Random sample prompt from generated prompt list 
-    indices = random.sample(len(prompt), config['num_subsamples'])
-    instructions = [prompt[i] for i in indices]
+    instructions = random.sample(prompt, config['num_subsamples'])
 
     goal, depressed, anxious, category, input = data.subsample_data(df, goals, depressed, anxious, config['num_subsamples'])
     
@@ -53,15 +52,16 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
     
     queries = []
     for inst in instructions:
-        temp = config.Config.EVAL_TEMPLATE 
+        t = unfilled.Config()
+        temp = t.EVAL_TEMPLATE
         for i in range(config['num_inputs']):
             filled_prompt = template.EvalTemplate(temp).fill(inst, goal[i], depressed[i], anxious[i], input[i])
             queries.append(filled_prompt)
 
     # Instantiate the LLM
-    model = llm.model_from_config(config['model'], disable_tqdm=False)
+    model = llm.model_from_config(config, disable_tqdm=False)
     outputs = model.complete(
-        queries, n=config['num_outputs_per_subsample'])
+        queries, n=config['num_queries_per_subsample'])
 
     # Generate DataFrame 
     df = pd.DataFrame({
@@ -75,7 +75,7 @@ def eval_prompt(prompt, goals, depressed, anxious, df, config):
 
     # Get rid of header
     df = df.rename_axis(None, axis=1)
-    
+    print(type(df))
     return df
 
 

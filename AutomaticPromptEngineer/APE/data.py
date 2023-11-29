@@ -26,38 +26,37 @@ def subsample_data(data, goals, depressed, anxious, subsample_size):
     Returns:
         goal, depressed, anxious, category, input (list): list of subsamples
     """
+    print(type(data))
     n = data.shape[0]-1   # number of datas
-    indices_goal = random.sample(range(len(goals)), subsample_size)
-    indices_depressed = random.sample(range(len(depressed)), subsample_size)
-    indices_anxious = random.sample(range(len(anxious)), subsample_size)
-    indices_data = random.sample(n, subsample_size)
-    
-    goal = [goals[i] for i in indices_goal]
-    depressed = [depressed[i] for i in indices_depressed]
-    anxious = [anxious[i] for i in indices_anxious]
+    print(n)
+    goal = random.choices(goals, k=subsample_size)
+    depressed = random.choices(depressed, k=subsample_size)
+    anxious = random.choices(anxious, k=subsample_size)
+    data_index = random.sample([i for i in range(n)], subsample_size)
         
     category = []
     input = []
-    for i in indices_data:
+
+    for i in data_index:
         value = ""
-        if pd.notnull(data[i+1][0]):
-            value += data[i+1][0]
-        if pd.notnull(data[i+1][1]):
+        if pd.notnull(data.iloc[i+1,0]):
+            value += data.iloc[i+1,0]
+        if pd.notnull(data.iloc[i+1,1]):
             if value:
                 value += '/'
-            value += data[i+1][1]
-        if pd.notnull(data[i+1][2]):
+            value += data.iloc[i+1,1]
+        if pd.notnull(data.iloc[i+1,2]):
             if value:
                 value += '/'
-            value += data[i+1][2]
-        if pd.notnull(data[i+1][3]):
+            value += data.iloc[i+1,2]
+        if pd.notnull(data.iloc[i+1,3]):
             if value:
                 value += '/'
-            value += data[i+1][3]
+            value += data.iloc[i+1,3]
         category.append(value)
         
-        assert pd.notnull(data[i+1][4])
-        input.append(data[i+1][4])
+        assert pd.notnull(data.iloc[i+1,4])
+        input.append(data.iloc[i+1,4])
 
     return goal, depressed, anxious, category, input
     
