@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-data = pd.read_csv('fill_counselor_2100.csv')
+data = pd.read_csv('fill_counselor_2100.csv', index_col=0)
 
 first_idx = int(input('> First index: '))
 last_idx = int(input('> Last index: '))
