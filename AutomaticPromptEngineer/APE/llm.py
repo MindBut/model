@@ -93,6 +93,8 @@ class GPT():
         for i in range(self.config['num_queries_per_subsample']):
             msg = response
             response_.append(msg)
+            print('====='+f'{i+1}번째'+'=====')
+            print(response_)
 
         for i in response_:
             msg = response_[1][1][i].message.content
